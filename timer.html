@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Random Timer Generator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f4f4f9;
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+    h1 {
+      margin-top: 50px;
+    }
+    .container {
+      margin-top: 30px;
+    }
+    button {
+      padding: 15px 30px;
+      font-size: 18px;
+      color: #fff;
+      background-color: #007BFF;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .message {
+      margin-top: 20px;
+      font-size: 18px;
+      color: #555;
+    }
+    .countdown {
+      font-size: 48px;
+      margin-top: 20px;
+      color: #d9534f;
+    }
+  </style>
+</head>
+<body>
+  <h1>Random Timer Generator</h1>
+  <div class="container">
+    <button id="start-button">Start Timer</button>
+    <div class="message" id="message"></div>
+    <div class="countdown" id="countdown"></div>
+  </div>
+  <audio id="alarm-sound" src="alarm.mp3" preload="auto"></audio>
+
+  <script>
+    const startButton = document.getElementById("start-button");
+    const message = document.getElementById("message");
+    const countdown = document.getElementById("countdown");
+    const alarmSound = document.getElementById("alarm-sound");
+
+    let timerInterval; // Holds the interval ID
+    let timeLeft = 0; // Remaining time in seconds
+    let isRunning = false; // Tracks whether the timer is active
+
+    startButton.addEventListener("click", () => {
+      if (isRunning) {
+        // If the timer is running, stop it
+        clearInterval(timerInterval);
+        isRunning = false;
+        startButton.textContent = "Restart Timer";
+        message.textContent = "Timer stopped.";
+        countdown.textContent = ""; // Clear countdown display
+      } else {
+        // If the timer is not running, start a new timer
+        const randomMinutes = Math.floor(Math.random() * 6) + 10;
+        timeLeft = randomMinutes * 60;
+        message.textContent = `Timer set for ${randomMinutes} minutes.`;
+        startButton.textContent = "Stop Timer";
+        countdown.textContent = formatTime(timeLeft);
+
+        // Start countdown
+        timerInterval = setInterval(() => {
+          if (timeLeft > 0) {
+            timeLeft--;
+            countdown.textContent = formatTime(timeLeft);
+          } else {
+            clearInterval(timerInterval); // Stop the interval
+            alarmSound.play(); // Play alarm
+            message.textContent = "Time's up!";
+            countdown.textContent = "";
+            startButton.textContent = "Restart Timer";
+            isRunning = false; // Reset running state
+          }
+        }, 1000);
+
+        isRunning = true; // Mark timer as running
+      }
+    });
+
+    // Function to format time in MM:SS
+    function formatTime(seconds) {
+      const minutes = Math.floor(seconds / 60);
+      const remainingSeconds = seconds % 60;
+      return `${String(minutes).padStart(2, "0")}:${String(remainingSeconds).padStart(2, "0")}`;
+    }
+  </script>
+</body>
+</html>
